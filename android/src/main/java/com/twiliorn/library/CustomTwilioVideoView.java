@@ -40,11 +40,18 @@ import com.twilio.video.BaseTrackStats;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
+import com.twilio.video.LocalAudioTrackPublication;
 import com.twilio.video.LocalAudioTrackStats;
+import com.twilio.video.LocalDataTrack;
+import com.twilio.video.LocalDataTrackPublication;
 import com.twilio.video.LocalParticipant;
 import com.twilio.video.LocalTrackStats;
 import com.twilio.video.LocalVideoTrack;
+import com.twilio.video.LocalVideoTrackPublication;
 import com.twilio.video.LocalVideoTrackStats;
+import com.twilio.video.NetworkQualityConfiguration;
+import com.twilio.video.NetworkQualityLevel;
+import com.twilio.video.NetworkQualityVerbosity;
 import com.twilio.video.Participant;
 import com.twilio.video.RemoteAudioTrack;
 import com.twilio.video.RemoteAudioTrackPublication;
@@ -79,6 +86,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_SWITCH
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECT_FAILURE;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DISCONNECTED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_NETWORK_QUALITY;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_NETWORK_QUALITY;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DATATRACK_MESSAGE_RECEIVED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_ADDED_DATA_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_ADDED_AUDIO_TRACK;
@@ -107,6 +116,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             Events.ON_CONNECTED,
             Events.ON_CONNECT_FAILURE,
             Events.ON_DISCONNECTED,
+            Events.ON_LOCAL_NETWORK_QUALITY,
+            Events.ON_REMOTE_NETWORK_QUALITY,
             Events.ON_PARTICIPANT_CONNECTED,
             Events.ON_PARTICIPANT_DISCONNECTED,
             Events.ON_PARTICIPANT_ADDED_VIDEO_TRACK,
@@ -127,6 +138,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_AUDIO_CHANGED = "onAudioChanged";
         String ON_CONNECTED = "onRoomDidConnect";
         String ON_CONNECT_FAILURE = "onRoomDidFailToConnect";
+        String ON_LOCAL_NETWORK_QUALITY = "onLocalNetworkQuality";
+        String ON_REMOTE_NETWORK_QUALITY = "onRemoteNetworkQuality";
         String ON_DISCONNECTED = "onRoomDidDisconnect";
         String ON_PARTICIPANT_CONNECTED = "onRoomParticipantDidConnect";
         String ON_PARTICIPANT_DISCONNECTED = "onRoomParticipantDidDisconnect";
@@ -410,6 +423,10 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         setAudioFocus(enableAudio);
         ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(this.accessToken);
 
+        NetworkQualityConfiguration configuration = new NetworkQualityConfiguration(
+            NetworkQualityVerbosity.NETWORK_QUALITY_VERBOSITY_MINIMAL,
+            NetworkQualityVerbosity.NETWORK_QUALITY_VERBOSITY_MINIMAL
+        );
         if (this.roomName != null) {
             connectOptionsBuilder.roomName(this.roomName);
         }
@@ -424,10 +441,11 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
         //LocalDataTrack localDataTrack = LocalDataTrack.create(getContext());
 
-         if (localDataTrack != null) {
+        if (localDataTrack != null) {
             connectOptionsBuilder.dataTracks(Collections.singletonList(localDataTrack));
         }
-
+        connectOptionsBuilder.enableNetworkQuality(true);
+        connectOptionsBuilder.networkQualityConfiguration(configuration);
         room = Video.connect(getContext(), connectOptionsBuilder.build(), roomListener());
     }
 
@@ -736,8 +754,46 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private Room.Listener roomListener() {
         return new Room.Listener() {
             @Override
-            public void onConnected(Room room) {
+            public void onConnected(final Room room) {
                 localParticipant = room.getLocalParticipant();
+                localParticipant.setListener(new LocalParticipant.Listener() {
+                    @Override
+                    public void onAudioTrackPublished(@NonNull LocalParticipant localParticipant, @NonNull LocalAudioTrackPublication localAudioTrackPublication) {
+
+                    }
+
+                    @Override
+                    public void onAudioTrackPublicationFailed(@NonNull LocalParticipant localParticipant, @NonNull LocalAudioTrack localAudioTrack, @NonNull TwilioException twilioException) {
+
+                    }
+
+                    @Override
+                    public void onVideoTrackPublished(@NonNull LocalParticipant localParticipant, @NonNull LocalVideoTrackPublication localVideoTrackPublication) {
+
+                    }
+
+                    @Override
+                    public void onVideoTrackPublicationFailed(@NonNull LocalParticipant localParticipant, @NonNull LocalVideoTrack localVideoTrack, @NonNull TwilioException twilioException) {
+
+                    }
+
+                    @Override
+                    public void onDataTrackPublished(@NonNull LocalParticipant localParticipant, @NonNull LocalDataTrackPublication localDataTrackPublication) {
+
+                    }
+
+                    @Override
+                    public void onDataTrackPublicationFailed(@NonNull LocalParticipant localParticipant, @NonNull LocalDataTrack localDataTrack, @NonNull TwilioException twilioException) {
+
+                    }
+
+                    @Override
+                    public void onNetworkQualityLevelChanged(@NonNull LocalParticipant localParticipant, @NonNull NetworkQualityLevel networkQualityLevel) {
+                        WritableMap event = buildParticipantDataEvent(localParticipant);
+                        event.putInt("quality", networkQualityLevel.ordinal() - 2);
+                        pushEvent(CustomTwilioVideoView.this, ON_LOCAL_NETWORK_QUALITY, event);
+                    }
+                });
 
                 WritableMap event = new WritableNativeMap();
                 event.putString("roomName", room.getName());
@@ -981,6 +1037,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                 WritableMap event = buildParticipantVideoEvent(participant, publication);
                 pushEvent(CustomTwilioVideoView.this, ON_PARTICIPANT_DISABLED_VIDEO_TRACK, event);
             }
+
+            @Override
+            public void onNetworkQualityLevelChanged(@NonNull RemoteParticipant participant, @NonNull NetworkQualityLevel networkQualityLevel) {
+                WritableMap event = buildParticipantDataEvent(participant);
+                event.putInt("quality", networkQualityLevel.ordinal() - 2);
+                pushEvent(CustomTwilioVideoView.this, ON_REMOTE_NETWORK_QUALITY, event);
+            }
+
         };
     }
 

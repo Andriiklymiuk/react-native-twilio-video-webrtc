@@ -23,6 +23,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CAMERA_SWITCH
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_CONNECT_FAILURE;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DISCONNECTED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_LOCAL_NETWORK_QUALITY;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_REMOTE_NETWORK_QUALITY;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_DISCONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
@@ -142,7 +144,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
         ));
 
         map.putAll(MapBuilder.of(
-                ON_PARTICIPANT_REMOVED_DATA_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_REMOVED_DATA_TRACK)
+                ON_PARTICIPANT_REMOVED_DATA_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_REMOVED_DATA_TRACK),
+                ON_LOCAL_NETWORK_QUALITY, MapBuilder.of("registrationName", ON_LOCAL_NETWORK_QUALITY),
+                ON_REMOTE_NETWORK_QUALITY, MapBuilder.of("registrationName", ON_REMOTE_NETWORK_QUALITY)
         ));
 
         map.putAll(MapBuilder.of(

@@ -45,6 +45,16 @@ const propTypes = {
   onRoomDidFailToConnect: PropTypes.func,
 
   /**
+   * Callback that is called when network quality of local is changed.
+   */
+  onLocalNetworkQuality: PropTypes.func,
+
+  /**
+   * Callback that is called when network quality of remote is changed.
+   */
+  onRemoteNetworkQuality: PropTypes.func,
+
+  /**
    * Callback that is called when user is disconnected from room.
    */
   onRoomDidDisconnect: PropTypes.func,
@@ -241,6 +251,8 @@ class CustomTwilioVideoView extends Component {
       'onRoomDidConnect',
       'onRoomDidFailToConnect',
       'onRoomDidDisconnect',
+      'onLocalNetworkQuality',
+      'onRemoteNetworkQuality',
       'onParticipantAddedDataTrack',
       'onParticipantRemovedDataTrack',
       'onDataTrackMessageReceived',
