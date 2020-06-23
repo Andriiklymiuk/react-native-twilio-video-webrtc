@@ -13,6 +13,9 @@
 static NSString* roomDidConnect               = @"roomDidConnect";
 static NSString* roomDidDisconnect            = @"roomDidDisconnect";
 static NSString* roomDidFailToConnect         = @"roomDidFailToConnect";
+static NSString* localNetworkQuality          = @"localNetworkQuality";
+static NSString* remoteNetworkQuality         = @"remoteNetworkQuality";
+
 static NSString* roomParticipantDidConnect    = @"roomParticipantDidConnect";
 static NSString* roomParticipantDidDisconnect = @"roomParticipantDidDisconnect";
 
@@ -59,7 +62,7 @@ TVIVideoFormat *RCTTWVideoModuleCameraSourceSelectVideoFormatBySize(AVCaptureDev
 }
 
 
-@interface RCTTWVideoModule () <TVIRemoteDataTrackDelegate, TVIRemoteParticipantDelegate, TVIRoomDelegate, TVICameraSourceDelegate>
+@interface RCTTWVideoModule () <TVIRemoteDataTrackDelegate, TVIRemoteParticipantDelegate, TVIRoomDelegate, TVICameraSourceDelegate, TVILocalParticipantDelegate>
 
 @property (strong, nonatomic) TVICameraSource *camera;
 @property (strong, nonatomic) TVILocalVideoTrack* localVideoTrack;
@@ -93,6 +96,8 @@ RCT_EXPORT_MODULE();
     roomDidConnect,
     roomDidDisconnect,
     roomDidFailToConnect,
+    localNetworkQuality,
+    remoteNetworkQuality,
     roomParticipantDidConnect,
     roomParticipantDidDisconnect,
     participantAddedVideoTrack,
@@ -391,7 +396,9 @@ RCT_EXPORT_METHOD(connect:(NSString *)accessToken roomName:(NSString *)roomName 
     if(encodingParameters[@"enableH264Codec"]){
       builder.preferredVideoCodecs = @[ [TVIH264Codec new] ];
     }
-      
+      builder.networkQualityEnabled = true;
+      builder.networkQualityConfiguration = [[TVINetworkQualityConfiguration alloc] initWithLocalVerbosity:TVINetworkQualityVerbosityMinimal remoteVerbosity:TVINetworkQualityVerbosityMinimal];
+
     if(encodingParameters[@"audioBitrate"] || encodingParameters[@"videoBitrate"]){
       NSInteger audioBitrate = [encodingParameters[@"audioBitrate"] integerValue];
       NSInteger videoBitrate = [encodingParameters[@"videoBitrate"] integerValue];
@@ -466,6 +473,7 @@ RCT_EXPORT_METHOD(disconnect) {
   TVILocalParticipant *localParticipant = room.localParticipant;
   [participants addObject:[localParticipant toJSON]];
     [self sendEventCheckingListenerWithName:roomDidConnect body:@{ @"roomName" : room.name , @"roomSid": room.sid, @"participants" : participants }];
+    localParticipant.delegate = self;
 
 }
 
@@ -545,6 +553,16 @@ RCT_EXPORT_METHOD(disconnect) {
 - (void)remoteParticipant:(TVIRemoteParticipant *)participant didDisableAudioTrack:(TVIRemoteAudioTrackPublication *)publication {
     [self sendEventCheckingListenerWithName:participantDisabledAudioTrack body:@{ @"participant": [participant toJSON], @"track": [publication toJSON] }];
 }
+
+- (void)remoteParticipant:(TVIRemoteParticipant *)participant networkQualityLevelDidChange:(TVINetworkQualityLevel)networkQualityLevel {
+    [self sendEventCheckingListenerWithName:remoteNetworkQuality body:@{ @"participant": [participant toJSON], @"quality": [NSNumber numberWithInt:networkQualityLevel] }];
+
+}
+
+- (void)localParticipant:(TVILocalParticipant *)participant networkQualityLevelDidChange:(TVINetworkQualityLevel)networkQualityLevel {
+    [self sendEventCheckingListenerWithName:localNetworkQuality body:@{ @"participant": [participant toJSON], @"quality": [NSNumber numberWithInt:networkQualityLevel] }];
+}
+	
 
 # pragma mark - TVIRemoteDataTrackDelegate
 

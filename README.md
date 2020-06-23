@@ -264,6 +264,14 @@ export default class Example extends Component {
     this.setState({status: 'disconnected'})
   }
 
+  _onLocalNetworkQuality = ({participant, quality}) => {
+    console.log("onLocalNetworkQuality: ", participant, quality)
+  }
+
+  _onRemoteNetworkQuality = ({participant, quality}) => {
+    console.log("onRemoteNetworkQuality: ", participant, quality)
+  }
+
   _onParticipantAddedVideoTrack = ({participant, track}) => {
     console.log("onParticipantAddedVideoTrack: ", participant, track)
 
@@ -358,6 +366,8 @@ export default class Example extends Component {
           onRoomDidFailToConnect= { this._onRoomDidFailToConnect }
           onParticipantAddedVideoTrack={ this._onParticipantAddedVideoTrack }
           onParticipantRemovedVideoTrack= { this._onParticipantRemovedVideoTrack }
+          onLocalNetworkQuality = { this._onLocalNetworkQuality }
+          onRemoteNetworkQuality = { this._ onRemoteNetworkQuality }
         />
       </View>
     );

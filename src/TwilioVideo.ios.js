@@ -36,6 +36,17 @@ export default class extends Component {
      * @param {{roomName, error}}
      */
     onRoomDidFailToConnect: PropTypes.func,
+
+    /**
+    * Callback that is called when network quality of local is changed.
+    */
+    onLocalNetworkQuality: PropTypes.func,
+
+    /**
+    * Callback that is called when network quality of remote is changed.
+    */
+    onRemoteNetworkQuality: PropTypes.func,
+    
     /**
      * Called when a new participant has connected
      *
@@ -283,6 +294,16 @@ export default class extends Component {
       this._eventEmitter.addListener('roomDidFailToConnect', data => {
         if (this.props.onRoomDidFailToConnect) {
           this.props.onRoomDidFailToConnect(data)
+        }
+      }),
+      this._eventEmitter.addListener('localNetworkQuality', data => {
+        if (this.props.onLocalNetworkQuality) {
+          this.props.onLocalNetworkQuality(data)
+        }
+      }),
+      this._eventEmitter.addListener('remoteNetworkQuality', data => {
+        if (this.props.onRemoteNetworkQuality) {
+          this.props.onRemoteNetworkQuality(data)
         }
       }),
       this._eventEmitter.addListener('roomParticipantDidConnect', data => {

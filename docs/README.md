@@ -51,6 +51,25 @@ Called when a new audio track has been added
 #### onParticipantAddedVideoTrack
 
 ```js
+onLocalNetworkQuality: Function
+```
+Called when network quality of local is changed.
+
+@param {{participant, track, enabled}}
+
+#### onLocalNetworkQuality
+
+```js
+onRemoteNetworkQuality: Function
+```
+
+Called when network quality of remote is changed.
+
+@param {{participant, track, enabled}}
+
+#### onRemoteNetworkQuality
+
+```js
 onParticipantAddedVideoTrack: Function
 ```
 
