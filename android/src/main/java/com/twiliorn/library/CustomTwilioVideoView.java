@@ -22,8 +22,8 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 import android.util.Log;
 import android.view.View;
 
@@ -34,6 +34,7 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.twilio.video.AspectRatio;
 import com.twilio.video.AudioTrackPublication;
 import com.twilio.video.BaseTrackStats;
 import com.twilio.video.CameraCapturer;
@@ -57,12 +58,12 @@ import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.RemoteVideoTrackStats;
 import com.twilio.video.Room;
-import com.twilio.video.Room.State;
 import com.twilio.video.StatsListener;
 import com.twilio.video.StatsReport;
 import com.twilio.video.TrackPublication;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
+import com.twilio.video.VideoCapturer;
 import com.twilio.video.VideoConstraints;
 import com.twilio.video.VideoDimensions;
 
@@ -165,7 +166,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private static PatchedVideoView thumbnailVideoView;
     private static LocalVideoTrack localVideoTrack;
 
-    private static CameraCapturer cameraCapturer;
+    private VideoCapturer cameraCapturer;
+    private static CameraCapturerCompat cameraCapturerCompat;
     private LocalAudioTrack localAudioTrack;
     private AudioManager audioManager;
     private int previousAudioMode;
@@ -219,8 +221,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     private VideoConstraints buildVideoConstraints() {
         return new VideoConstraints.Builder()
-                .minVideoDimensions(VideoDimensions.CIF_VIDEO_DIMENSIONS)
-                .maxVideoDimensions(VideoDimensions.CIF_VIDEO_DIMENSIONS)
+                .aspectRatio(AspectRatio.ASPECT_RATIO_16_9)
+                .minVideoDimensions(VideoDimensions.HD_720P_VIDEO_DIMENSIONS)
+                .maxVideoDimensions(VideoDimensions.HD_720P_VIDEO_DIMENSIONS)
                 .minFps(5)
                 .maxFps(15)
                 .build();
@@ -254,12 +257,21 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         }
     }
 
+    private CameraCapturer.CameraSource getAvailableCameraSource() {
+        return (CameraCapturer.isSourceAvailable(CameraCapturer.CameraSource.FRONT_CAMERA)) ?
+                (CameraCapturer.CameraSource.FRONT_CAMERA) :
+                (CameraCapturer.CameraSource.BACK_CAMERA);
+    }
+
     private boolean createLocalVideo(boolean enableVideo) {
         // Share your camera
-        cameraCapturer = this.createCameraCaputer(getContext(), CameraCapturer.CameraSource.FRONT_CAMERA);
-        if (cameraCapturer == null){
-            cameraCapturer = this.createCameraCaputer(getContext(), CameraCapturer.CameraSource.BACK_CAMERA);
-        }
+        cameraCapturerCompat = new CameraCapturerCompat(getContext(), getAvailableCameraSource(), new CameraCapturerCompat.CameraSwitchedListener() {
+            @Override
+            public void onCameraSwitched() {
+                setThumbnailMirror();
+            }
+        });
+        cameraCapturer = cameraCapturerCompat.getVideoCapturer();
         if (cameraCapturer == null){
             WritableMap event = new WritableNativeMap();
             event.putString("error", "No camera is supported on this device");
@@ -516,8 +528,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     // ===== BUTTON LISTENERS ======================================================================
     private static void setThumbnailMirror() {
-        if (cameraCapturer != null) {
-            CameraCapturer.CameraSource cameraSource = cameraCapturer.getCameraSource();
+        if (cameraCapturerCompat != null) {
+            CameraCapturer.CameraSource cameraSource = cameraCapturerCompat.getCameraSource();
             final boolean isBackCamera = (cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
             if (thumbnailVideoView != null && thumbnailVideoView.getVisibility() == View.VISIBLE) {
                 thumbnailVideoView.setMirror(!isBackCamera);
@@ -527,8 +539,9 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     public void switchCamera() {
         if (cameraCapturer != null) {
-            cameraCapturer.switchCamera();
-            CameraCapturer.CameraSource cameraSource = cameraCapturer.getCameraSource();
+            cameraCapturerCompat.switchCamera();
+//            setThumbnailMirror();
+            CameraCapturer.CameraSource cameraSource = cameraCapturerCompat.getCameraSource();
             final boolean isBackCamera = cameraSource == CameraCapturer.CameraSource.BACK_CAMERA;
             WritableMap event = new WritableNativeMap();
             event.putBoolean("isBackCamera", isBackCamera);
