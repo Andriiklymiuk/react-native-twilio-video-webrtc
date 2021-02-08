@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioAttributes;
+import android.media.AudioDeviceInfo;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
@@ -476,8 +477,21 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
              * possible VoIP performance. Some devices have difficulties with
              * speaker mode if this is not set.
              */
+          if (!(Build.MODEL.compareTo("Lenovo TB-8505F") == 0 || Build.BRAND.compareTo("Lenovo") == 0)) {
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-            audioManager.setSpeakerphoneOn(!audioManager.isBluetoothScoOn());
+          }
+          audioManager.setSpeakerphoneOn(!(audioManager.isBluetoothScoOn() || audioManager.isBluetoothA2dpOn()));
+
+          AudioDeviceInfo[] devicesInfo = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+          for (int i = 0; i < devicesInfo.length; i++) {
+            int deviceType = devicesInfo[i].getType();
+            if (deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+              deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+              deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+            ) {
+              audioManager.setSpeakerphoneOn(false);
+            }
+          }
             getContext().registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
 
         } else {
