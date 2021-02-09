@@ -601,10 +601,6 @@ RCT_EXPORT_METHOD(disconnect) {
     [self sendEventCheckingListenerWithName:networkQualityLevelsChanged body:@{ @"participant": [participant toJSON], @"isLocalUser": [NSNumber numberWithBool:false], @"quality": [NSNumber numberWithInt:(int)networkQualityLevel]}];
 }
 
-- (void)localParticipant:(TVILocalParticipant *)participant networkQualityLevelDidChange:(TVINetworkQualityLevel)networkQualityLevel {
-    [self sendEventCheckingListenerWithName:localNetworkQuality body:@{ @"participant": [participant toJSON], @"quality": [NSNumber numberWithInt:networkQualityLevel] }];
-}
-
 # pragma mark - TVIRemoteDataTrackDelegate
 
 - (void)remoteDataTrack:(nonnull TVIRemoteDataTrack *)remoteDataTrack didReceiveString:(nonnull NSString *)message {
