@@ -40,6 +40,8 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_D
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_ENABLED_AUDIO_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_DISABLED_AUDIO_TRACK;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_STATS_RECEIVED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_NETWORK_QUALITY_LEVELS_CHANGED;
+import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DOMINANT_SPEAKER_CHANGED;
 
 
 public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilioVideoView> {
@@ -57,6 +59,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     private static final int RELEASE_RESOURCE = 10;
     private static final int TOGGLE_BLUETOOTH_HEADSET = 11;
     private static final int SEND_STRING = 12;
+    private static final int PUBLISH_VIDEO = 13;
+    private static final int PUBLISH_AUDIO = 14;
 
     @Override
     public String getName() {
@@ -77,7 +81,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 boolean enableAudio = args.getBoolean(2);
                 boolean enableVideo = args.getBoolean(3);
                 boolean enableRemoteAudio = args.getBoolean(4);
-                view.connectToRoomWrapper(roomName, accessToken, enableAudio, enableVideo, enableRemoteAudio);
+                boolean enableNetworkQualityReporting = args.getBoolean(5);
+                boolean dominantSpeakerEnabled = args.getBoolean(6);
+                view.connectToRoomWrapper(roomName, accessToken, enableAudio, enableVideo, enableRemoteAudio, enableNetworkQualityReporting, dominantSpeakerEnabled);
                 break;
             case DISCONNECT:
                 view.disconnect();
@@ -117,6 +123,12 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
             case SEND_STRING:
                 view.sendString(args.getString(0));
                 break;
+            case PUBLISH_VIDEO:
+                view.publishLocalVideo(args.getBoolean(0));
+                break;
+            case PUBLISH_AUDIO:
+                view.publishLocalAudio(args.getBoolean(0));
+                break;
         }
     }
 
@@ -154,7 +166,9 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
                 ON_PARTICIPANT_DISABLED_VIDEO_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_DISABLED_VIDEO_TRACK),
                 ON_PARTICIPANT_ENABLED_AUDIO_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_ENABLED_AUDIO_TRACK),
                 ON_PARTICIPANT_DISABLED_AUDIO_TRACK, MapBuilder.of("registrationName", ON_PARTICIPANT_DISABLED_AUDIO_TRACK),
-                ON_STATS_RECEIVED, MapBuilder.of("registrationName", ON_STATS_RECEIVED)
+                ON_STATS_RECEIVED, MapBuilder.of("registrationName", ON_STATS_RECEIVED),
+                ON_NETWORK_QUALITY_LEVELS_CHANGED, MapBuilder.of("registrationName", ON_NETWORK_QUALITY_LEVELS_CHANGED),
+                ON_DOMINANT_SPEAKER_CHANGED, MapBuilder.of("registrationName", ON_DOMINANT_SPEAKER_CHANGED)
         ));
 
         return map;
