@@ -377,6 +377,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
          */
         if (room != null && room.getState() != Room.State.DISCONNECTED) {
             room.disconnect();
+            audioManager.stopBluetoothSco();
             disconnectedFromOnDestroy = true;
         }
 
@@ -501,18 +502,21 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
              * possible VoIP performance. Some devices have difficulties with
              * speaker mode if this is not set.
              */
-          if (!(Build.MODEL.compareTo("Lenovo TB-8505F") == 0 || Build.BRAND.compareTo("Lenovo") == 0)) {
-            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-          }
+          audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
           audioManager.setSpeakerphoneOn(!(audioManager.isBluetoothScoOn() || audioManager.isBluetoothA2dpOn()));
 
           AudioDeviceInfo[] devicesInfo = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
           for (int i = 0; i < devicesInfo.length; i++) {
             int deviceType = devicesInfo[i].getType();
-            if (deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+            if ( deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+              audioManager.setSpeakerphoneOn(false);
+            }
+            if (
               deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
               deviceType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
             ) {
+              audioManager.startBluetoothSco();
+              audioManager.setBluetoothScoOn(true);
               audioManager.setSpeakerphoneOn(false);
             }
           }
@@ -563,10 +567,12 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         if (localAudioTrack != null) {
             localAudioTrack.release();
             localAudioTrack = null;
+            audioManager.stopBluetoothSco();
         }
         if (localVideoTrack != null) {
             localVideoTrack.release();
             localVideoTrack = null;
+            audioManager.stopBluetoothSco();
         }
         setAudioFocus(false);
         if (cameraCapturer != null) {
