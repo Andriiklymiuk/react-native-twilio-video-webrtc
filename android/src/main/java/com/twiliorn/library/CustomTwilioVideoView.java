@@ -377,7 +377,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
          */
         if (room != null && room.getState() != Room.State.DISCONNECTED) {
             room.disconnect();
-            audioManager.stopBluetoothSco();
             disconnectedFromOnDestroy = true;
         }
 
@@ -391,6 +390,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
         if (localAudioTrack != null) {
             localAudioTrack.release();
+            audioManager.stopBluetoothSco();
             localAudioTrack = null;
         }
 
