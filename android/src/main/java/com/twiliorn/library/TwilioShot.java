@@ -23,7 +23,12 @@ public class TwilioShot implements UIBlock {
     private NativeViewHierarchyManager nativeViewHierarchyManager;
     TwilioShot(Context context) {
         detector = new BarcodeDetector.Builder(context)
-           .setBarcodeFormats(Barcode.EAN_13 | Barcode.UPC_A | Barcode.UPC_E)
+           .setBarcodeFormats(
+               Barcode.QR_CODE |
+               Barcode.EAN_13 |
+               Barcode.UPC_A |
+               Barcode.UPC_E |
+               Barcode.CODE_128)
             .build();
     }
 
