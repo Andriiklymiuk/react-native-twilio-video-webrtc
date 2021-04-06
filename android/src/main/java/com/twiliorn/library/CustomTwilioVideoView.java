@@ -508,7 +508,10 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
           AudioDeviceInfo[] devicesInfo = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
           for (int i = 0; i < devicesInfo.length; i++) {
             int deviceType = devicesInfo[i].getType();
-            if ( deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+            if (
+              deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+              deviceType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+            ) {
               audioManager.setSpeakerphoneOn(false);
             }
             if (
@@ -548,7 +551,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         public void onReceive(Context context, Intent intent) {
 //            audioManager.setSpeakerphoneOn(true);
             if (Intent.ACTION_HEADSET_PLUG.equals(intent.getAction())) {
-                audioManager.setSpeakerphoneOn(!audioManager.isBluetoothScoOn());
+                audioManager.setSpeakerphoneOn(false);
             }
         }
     }
