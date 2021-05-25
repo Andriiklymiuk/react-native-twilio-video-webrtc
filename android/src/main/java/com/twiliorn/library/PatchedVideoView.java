@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 
-import com.twilio.video.I420Frame;
 import com.twilio.video.VideoView;
 
 import tvi.webrtc.RendererCommon;
@@ -27,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
 import static android.graphics.ImageFormat.NV21;
+import tvi.webrtc.VideoFrame;
 
 /*
  * VideoView that notifies Listener of the first frame rendered and the first frame after a reset
@@ -210,7 +210,7 @@ public class PatchedVideoView extends VideoView {
     }
 
     @Override
-    public void renderFrame(I420Frame frame) {
+    public void onFrame(VideoFrame frame) {
         if (notifyFrameRendered) {
             notifyFrameRendered = false;
             mainThreadHandler.post(new Runnable() {
@@ -220,8 +220,8 @@ public class PatchedVideoView extends VideoView {
                 }
             });
         }
-        super.renderFrame(frame);
         currentFrame = frame;
+        super.onFrame(frame);
     }
 
     /*
