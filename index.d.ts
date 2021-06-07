@@ -8,8 +8,6 @@ declare module "react-native-twilio-video-webrtc" {
   }
 
   type scaleType = "fit" | "fill";
-  type cameraType = "front" | "back";
-
   interface TwilioVideoParticipantViewProps extends ViewProps {
     trackIdentifier: TrackIdentifier;
     ref?: React.Ref<any>;
@@ -40,13 +38,6 @@ declare module "react-native-twilio-video-webrtc" {
 
   export type TrackEventCb = (t: TrackEventCbArgs) => void;
 
-  export interface DataTrackEventCbArgs {
-    message: string;
-    trackSid: string;
-  }
-
-  export type DataTrackEventCb = (t: DataTrackEventCbArgs) => void;
-
   interface RoomEventCommonArgs {
     roomName: string;
     roomSid: string;
@@ -58,7 +49,6 @@ declare module "react-native-twilio-video-webrtc" {
 
   type RoomEventArgs = RoomEventCommonArgs & {
     participants: Participant[];
-    localParticipant: Participant;
   };
 
   type ParticipantEventArgs = RoomEventCommonArgs & {
@@ -102,14 +92,13 @@ declare module "react-native-twilio-video-webrtc" {
     onNetworkQualityLevelsChanged?: NetworkLevelChangeEventCb;
 
     onStatsReceived?: (data: any) => void;
-    onDataTrackMessageReceived?: DataTrackEventCb;
+    onDataTrackMessageReceived?: (data: { message: string }) => void;
     ref?: React.Ref<any>;
   };
 
   type iOSConnectParams = {
-    roomName?: string;
     accessToken: string;
-    cameraType?: cameraType;
+    roomName?: string;
     enableAudio?: boolean;
     enableVideo?: boolean;
     encodingParameters?: {
@@ -124,12 +113,10 @@ declare module "react-native-twilio-video-webrtc" {
   type androidConnectParams = {
     roomName?: string;
     accessToken: string;
-    cameraType?: cameraType;
     enableAudio?: boolean;
     enableVideo?: boolean;
     enableRemoteAudio?: boolean;
     enableNetworkQualityReporting?: boolean;
-    maintainVideoTrackInBackground?: boolean;
   };
 
   class TwilioVideo extends React.Component<TwilioVideoProps> {

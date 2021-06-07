@@ -15,12 +15,7 @@ class TwilioVideoLocalView extends Component {
     /**
      * Indicate if video feed is enabled.
      */
-    enabled: PropTypes.bool.isRequired,
-    /**
-     * How the video stream should be scaled to fit its
-     * container.
-     */
-    scaleType: PropTypes.oneOf(['fit', 'fill'])
+    enabled: PropTypes.bool.isRequired
   }
 
   render () {

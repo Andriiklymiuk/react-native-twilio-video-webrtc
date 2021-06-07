@@ -17,7 +17,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
 
-import tvi.webrtc.RendererCommon;
+import org.webrtc.RendererCommon;
 
 import static com.twiliorn.library.RNVideoViewGroup.Events.ON_FRAME_DIMENSIONS_CHANGED;
 

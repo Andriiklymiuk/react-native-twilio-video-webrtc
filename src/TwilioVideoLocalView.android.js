@@ -53,7 +53,7 @@ function validateOptions(options) {
   if (acceptedResults.indexOf(options.result) === -1) {
     options.result = defaultOptions.result;
     errors.push(
-      "option result '" + options.result + "' is not in valid formats: " + acceptedResults.join(" | ")
+      "option result '" + options.result  + "' is not in valid formats: " + acceptedResults.join(" | ")
     );
   }
   return { options, errors };
@@ -72,22 +72,16 @@ function detectBarcode(view) {
   }
   return TwilioModule.detectBarcode(view);
 }
-import PropTypes from 'prop-types'
 
 const propTypes = {
-  ...View.propTypes,
-  /**
-   * How the video stream should be scaled to fit its
-   * container.
-   */
-  scaleType: PropTypes.oneOf(['fit', 'fill'])
+  ...View.propTypes
 }
 
 class TwilioVideoPreview extends React.Component {
   detectBarcode() {
     return detectBarcode(this);
   }
-  render() {
+  render () {
     return <NativeTwilioVideoPreview {...this.props} />
   }
 }

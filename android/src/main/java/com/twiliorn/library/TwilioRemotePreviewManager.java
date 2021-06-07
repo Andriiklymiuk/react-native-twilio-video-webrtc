@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import tvi.webrtc.RendererCommon;
+import org.webrtc.RendererCommon;
 
 import java.util.Map;
 
