@@ -12,7 +12,7 @@ import { NativeModules, NativeEventEmitter, View } from 'react-native'
 
 const { TWVideoModule } = NativeModules
 
-export default class TwilioVideo extends Component {
+export default class extends Component {
   static propTypes = {
     /**
      * Flag that enables screen sharing RCTRootView instead of camera capture
@@ -171,7 +171,7 @@ export default class TwilioVideo extends Component {
     this._eventEmitter = new NativeEventEmitter(TWVideoModule)
   }
 
-  componentDidMount () {
+  componentWillMount () {
     this._registerEvents()
     this._startLocalVideo()
     this._startLocalAudio()
@@ -240,25 +240,8 @@ export default class TwilioVideo extends Component {
    * @param  {String} encodingParameters Control Encoding config
    * @param  {Boolean} enableNetworkQualityReporting Report network quality of participants
    */
-  connect ({
-    roomName,
-    accessToken,
-    cameraType = "front",
-    enableAudio = true,
-    enableVideo = true,
-    encodingParameters = null,
-    enableNetworkQualityReporting = false,
-    dominantSpeakerEnabled = false
-  }) {
-    TWVideoModule.connect(accessToken,
-      roomName,
-      enableAudio,
-      enableVideo,
-      encodingParameters,
-      enableNetworkQualityReporting,
-      dominantSpeakerEnabled,
-      cameraType,
-    )
+  connect ({ roomName, accessToken, enableVideo = true, encodingParameters = null, enableNetworkQualityReporting = false, dominantSpeakerEnabled = false }) {
+    TWVideoModule.connect(accessToken, roomName, enableVideo, encodingParameters, enableNetworkQualityReporting, dominantSpeakerEnabled)
   }
 
   /**

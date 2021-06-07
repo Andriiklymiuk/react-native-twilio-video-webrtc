@@ -16,10 +16,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.twilio.video.VideoFrame;
+import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoScaleType;
 
-import tvi.webrtc.RendererCommon;
-import tvi.webrtc.VideoFrame;
+import org.webrtc.RendererCommon;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,16 +52,17 @@ public class RNVideoViewGroup extends ViewGroup {
         surfaceViewRenderer.setVideoScaleType(VideoScaleType.ASPECT_FILL);
         addView(surfaceViewRenderer);
         surfaceViewRenderer.setListener(
-                new RendererCommon.RendererEvents() {
+                new VideoRenderer.Listener() {
                     @Override
-                    public void onFirstFrameRendered() {
+                    public void onFirstFrame() {
 
                     }
 
                     @Override
-                    public void onFrameResolutionChanged(int vw, int vh, int rotation) {
+                    public void onFrameDimensionsChanged(int vw, int vh, int rotation) {
                         synchronized (layoutSync) {
-                            if (rotation == 90 || rotation == 270) {
+                            if (rotation == VideoFrame.RotationAngle.ROTATION_90.getValue() ||
+                                    rotation == VideoFrame.RotationAngle.ROTATION_270.getValue()) {
                                 videoHeight = vw;
                                 videoWidth = vh;
                             } else {

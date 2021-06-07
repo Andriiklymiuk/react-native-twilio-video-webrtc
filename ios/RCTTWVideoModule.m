@@ -180,17 +180,11 @@ RCT_EXPORT_METHOD(startLocalVideo) {
   self.localVideoTrack = [TVILocalVideoTrack trackWithSource:self.camera enabled:NO name:@"camera"];
 }
 
-- (void)startCameraCapture:(NSString *)cameraType {
+- (void)startCameraCapture {
   if (self.camera == nil) {
     return;
   }
-  AVCaptureDevice *camera;
-    if ([cameraType isEqualToString:@"back"]) {
-    camera = [TVICameraSource captureDeviceForPosition:AVCaptureDevicePositionBack];
-  } else {
-    camera = [TVICameraSource captureDeviceForPosition:AVCaptureDevicePositionFront];
-  }
-
+  AVCaptureDevice *camera = [TVICameraSource captureDeviceForPosition:AVCaptureDevicePositionFront];
   [self.camera startCaptureWithDevice:camera completion:^(AVCaptureDevice *device,
           TVIVideoFormat *startFormat,
           NSError *error) {
@@ -246,18 +240,12 @@ RCT_REMAP_METHOD(setLocalAudioEnabled, enabled:(BOOL)enabled setLocalAudioEnable
   resolve(@(enabled));
 }
 
-
-// set a default for setting local video enabled
 - (bool)_setLocalVideoEnabled:(bool)enabled {
-    return [self _setLocalVideoEnabled:enabled cameraType:@"front"];
-}
-
-- (bool)_setLocalVideoEnabled:(bool)enabled cameraType:(NSString *)cameraType {
   if (self.localVideoTrack != nil) {
       [self.localVideoTrack setEnabled:enabled];
       if (self.camera) {
           if (enabled) {
-            [self startCameraCapture:cameraType];
+            [self startCameraCapture];
           } else {
             [self clearCameraInstance];
           }
@@ -402,11 +390,8 @@ RCT_EXPORT_METHOD(getStats) {
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSString *)accessToken roomName:(NSString *)roomName enableAudio:(BOOL *)enableAudio enableVideo:(BOOL *)enableVideo encodingParameters:(NSDictionary *)encodingParameters enableNetworkQualityReporting:(BOOL *)enableNetworkQualityReporting dominantSpeakerEnabled:(BOOL *)dominantSpeakerEnabled cameraType:(NSString *)cameraType) {
-  [self _setLocalVideoEnabled:enableVideo cameraType:cameraType];
-  if (self.localAudioTrack) {
-    [self.localAudioTrack setEnabled:enableAudio];
-  }
+RCT_EXPORT_METHOD(connect:(NSString *)accessToken roomName:(NSString *)roomName enableVideo:(BOOL *)enableVideo encodingParameters:(NSDictionary *)encodingParameters enableNetworkQualityReporting:(BOOL *)enableNetworkQualityReporting dominantSpeakerEnabled:(BOOL *)dominantSpeakerEnabled) {
+  [self _setLocalVideoEnabled:enableVideo];
 
   TVIConnectOptions *connectOptions = [TVIConnectOptions optionsWithToken:accessToken block:^(TVIConnectOptionsBuilder * _Nonnull builder) {
     if (self.localVideoTrack) {
@@ -529,7 +514,7 @@ RCT_EXPORT_METHOD(disconnect) {
   self.localParticipant.delegate = self;
 
   [participants addObject:[self.localParticipant toJSON]];
-  [self sendEventCheckingListenerWithName:roomDidConnect body:@{ @"roomName" : room.name , @"roomSid": room.sid, @"participants" : participants, @"localParticipant" : [self.localParticipant toJSON] }];
+  [self sendEventCheckingListenerWithName:roomDidConnect body:@{ @"roomName" : room.name , @"roomSid": room.sid, @"participants" : participants }];
 
 }
 
@@ -619,7 +604,7 @@ RCT_EXPORT_METHOD(disconnect) {
 # pragma mark - TVIRemoteDataTrackDelegate
 
 - (void)remoteDataTrack:(nonnull TVIRemoteDataTrack *)remoteDataTrack didReceiveString:(nonnull NSString *)message {
-    [self sendEventCheckingListenerWithName:dataTrackMessageReceived body:@{ @"message": message, @"trackSid": remoteDataTrack.sid }];
+    [self sendEventCheckingListenerWithName:dataTrackMessageReceived body:@{ @"message": message }];
 }
 
 - (void)remoteDataTrack:(nonnull TVIRemoteDataTrack *)remoteDataTrack didReceiveData:(nonnull NSData *)message {
@@ -634,4 +619,3 @@ RCT_EXPORT_METHOD(disconnect) {
 }
 
 @end
-

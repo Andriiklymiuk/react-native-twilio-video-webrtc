@@ -1,136 +1,259 @@
-Components
-----------
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# React Component Reference
+
+- [TwilioVideo](#twiliovideo)
+- [TwilioVideoLocalView](#twiliovideolocalview)
+- [TwilioVideoParticipantView](#twiliovideoparticipantview)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## TwilioVideo
+
+From [`../src/TwilioVideo.js`](../src/TwilioVideo.js)
+
+#### onCameraDidStart
+
+```js
+onCameraDidStart: Function
+```
+
+Called when the camera has started
+
+#### onCameraDidStopRunning
+
+```js
+onCameraDidStopRunning: Function
+```
+
+Called when the camera has stopped running with an error
+
+@param {{error}} The error message description
+
+#### onCameraWasInterrupted
+
+```js
+onCameraWasInterrupted: Function
+```
+
+Called when the camera has been interrupted
+
+#### onParticipantAddedAudioTrack
+
+```js
+onParticipantAddedAudioTrack: Function
+```
+
+Called when a new audio track has been added
+
+@param {{participant, track}}
+
+#### onParticipantAddedVideoTrack
+
+```js
+onLocalNetworkQuality: Function
+```
+Called when network quality of local is changed.
+
+@param {{participant, track, enabled}}
+
+#### onLocalNetworkQuality
+
+```js
+onRemoteNetworkQuality: Function
+```
+
+Called when network quality of remote is changed.
+
+@param {{participant, track, enabled}}
+
+#### onRemoteNetworkQuality
+
+```js
+onParticipantAddedVideoTrack: Function
+```
+
+Called when a new video track has been added
+
+@param {{participant, track, enabled}}
+
+#### onParticipantDisabledVideoTrack
+
+```js
+onParticipantDisabledVideoTrack: Function
+```
+
+Called when a video track has been disabled.
+
+@param {{participant, track}}
+
+#### onParticipantDisabledAudioTrack
+
+```js
+onParticipantDisabledAudioTrack: Function
+```
+
+Called when an audio track has been disabled.
+
+@param {{participant, track}}
+
+#### onParticipantEnabledVideoTrack
+
+```js
+onParticipantEnabledVideoTrack: Function
+```
+
+Called when a video track has been enabled.
+
+@param {{participant, track}}
+
+#### onParticipantEnabledAudioTrack
+
+```js
+onParticipantEnabledVideoTrack: Function
+```
+
+Called when an audio track has been enabled.
+
+@param {{participant, track}}
+
+#### onParticipantRemovedAudioTrack
+
+```js
+onParticipantRemovedAudioTrack: Function
+```
+
+Called when a audio track has been removed
+
+@param {{participant, track}}
+
+#### onParticipantRemovedVideoTrack
+
+```js
+onParticipantRemovedVideoTrack: Function
+```
+
+Called when a video track has been removed
+
+@param {{participant, track}}
+
+#### onRoomDidConnect
+
+```js
+onRoomDidConnect: Function
+```
+
+Called when the room has connected
+
+@param {{roomName, participants}}
+
+#### onRoomDidDisconnect
+
+```js
+onRoomDidDisconnect: Function
+```
+
+Called when the room has disconnected
+
+@param {{roomName, error}}
+
+#### onRoomDidFailToConnect
+
+```js
+onRoomDidFailToConnect: Function
+```
+
+Called when connection with room failed
+
+@param {{roomName, error}}
+
+#### onRoomParticipantDidConnect
+
+```js
+onRoomParticipantDidConnect: Function
+```
+
+Called when a new participant has connected
+
+@param {{roomName, participant}}
+
+#### onRoomParticipantDidDisconnect
+
+```js
+onRoomParticipantDidDisconnect: Function
+```
+
+Called when a participant has disconnected
+
+@param {{roomName, participant}}
+
+#### setLocalVideoEnabled
+
+```js
+setLocalVideoEnabled: Function
+```
+
+Called when a local video is disable / enabled, how to use it below
+
+```js
+_onDisableCameraButtonPress = () => {
+  this.refs.twilioVideo
+    .setLocalVideoEnabled(!this.state.cameraDisabled)
+    .then(cameraDisabled => {
+      this.setState({ cameraDisabled });
+    });
+};
+
+```
+
+#### setLocalAudioEnabled
+
+```js
+setLocalAudioEnabled: Function
+```
+
+Called when a local audio is disable / enabled, how to use it below
+
+```js
+_onMuteButtonPress = () => {
+  this.refs.twilioVideo
+    .setLocalAudioEnabled(!this.state.isAudioEnabled)
+    .then(isAudioEnabled => {
+      this.setState({ isAudioEnabled });
+    });
+};
 
 
-**src/TwilioVideo.android.js**
+```
 
+<br><br>
 
-### 1. CustomTwilioVideoView
+## TwilioVideoLocalView
 
+From [`../src/TwilioVideoLocalView.js`](../src/TwilioVideoLocalView.js)
 
+#### enabled
 
+```js
+// Required
+enabled: Boolean
+```
 
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-onCameraSwitched | func | no |  | Callback that is called when camera source changes
-onVideoChanged | func | no |  | Callback that is called when video is toggled.
-onAudioChanged | func | no |  | Callback that is called when a audio is toggled.
-onRoomDidConnect | func | no |  | Called when the room has connected  @param {{roomName, participants, localParticipant}}
-onRoomDidFailToConnect | func | no |  | Callback that is called when connecting to room fails.
-onRoomDidDisconnect | func | no |  | Callback that is called when user is disconnected from room.
-onParticipantAddedDataTrack | func | no |  | Called when a new data track has been added  @param {{participant, track}}
-onParticipantRemovedDataTrack | func | no |  | Called when a data track has been removed  @param {{participant, track}}
-onDataTrackMessageReceived | func | no |  | Called when an dataTrack receives a message  @param {{message, trackSid}}
-onParticipantAddedVideoTrack | func | no |  | Called when a new video track has been added  @param {{participant, track, enabled}}
-onParticipantRemovedVideoTrack | func | no |  | Called when a video track has been removed  @param {{participant, track}}
-onParticipantAddedAudioTrack | func | no |  | Called when a new audio track has been added  @param {{participant, track}}
-onParticipantRemovedAudioTrack | func | no |  | Called when a audio track has been removed  @param {{participant, track}}
-onRoomParticipantDidConnect | func | no |  | Callback called a participant enters a room.
-onRoomParticipantDidDisconnect | func | no |  | Callback that is called when a participant exits a room.
-onParticipantEnabledVideoTrack | func | no |  | Called when a video track has been enabled.  @param {{participant, track}}
-onParticipantDisabledVideoTrack | func | no |  | Called when a video track has been disabled.  @param {{participant, track}}
-onParticipantEnabledAudioTrack | func | no |  | Called when an audio track has been enabled.  @param {{participant, track}}
-onParticipantDisabledAudioTrack | func | no |  | Called when an audio track has been disabled.  @param {{participant, track}}
-onStatsReceived | func | no |  | Callback that is called when stats are received (after calling getStats)
-onNetworkQualityLevelsChanged | func | no |  | Callback that is called when network quality levels are changed (only if enableNetworkQualityReporting in connect is set to true)
-onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes @param {{ participant, room }} dominant participant and room
------
+Indicate if video feed is enabled.
 
-**src/TwilioVideo.ios.js**
+<br><br>
 
+## TwilioVideoParticipantView
 
-### 1. TwilioVideo
+From [`../src/TwilioVideoParticipantView.js`](../src/TwilioVideoParticipantView.js)
 
+#### trackIdentifier
 
+```js
+trackIdentifier: {
+    participantSid: String
+    videoTrackSid: String
+}
+```
 
-
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-screenShare | bool | no |  | Flag that enables screen sharing RCTRootView instead of camera capture
-onRoomDidConnect | func | no |  | Called when the room has connected  @param {{roomName, participants, localParticipant}}
-onRoomDidDisconnect | func | no |  | Called when the room has disconnected  @param {{roomName, error}}
-onRoomDidFailToConnect | func | no |  | Called when connection with room failed  @param {{roomName, error}}
-onRoomParticipantDidConnect | func | no |  | Called when a new participant has connected  @param {{roomName, participant}}
-onRoomParticipantDidDisconnect | func | no |  | Called when a participant has disconnected  @param {{roomName, participant}}
-onParticipantAddedVideoTrack | func | no |  | Called when a new video track has been added  @param {{participant, track, enabled}}
-onParticipantRemovedVideoTrack | func | no |  | Called when a video track has been removed  @param {{participant, track}}
-onParticipantAddedDataTrack | func | no |  | Called when a new data track has been added  @param {{participant, track}}
-onParticipantRemovedDataTrack | func | no |  | Called when a data track has been removed  @param {{participant, track}}
-onParticipantAddedAudioTrack | func | no |  | Called when a new audio track has been added  @param {{participant, track}}
-onParticipantRemovedAudioTrack | func | no |  | Called when a audio track has been removed  @param {{participant, track}}
-onParticipantEnabledVideoTrack | func | no |  | Called when a video track has been enabled.  @param {{participant, track}}
-onParticipantDisabledVideoTrack | func | no |  | Called when a video track has been disabled.  @param {{participant, track}}
-onParticipantEnabledAudioTrack | func | no |  | Called when an audio track has been enabled.  @param {{participant, track}}
-onParticipantDisabledAudioTrack | func | no |  | Called when an audio track has been disabled.  @param {{participant, track}}
-onDataTrackMessageReceived | func | no |  | Called when an dataTrack receives a message  @param {{message, trackSid}}
-onCameraDidStart | func | no |  | Called when the camera has started
-onCameraWasInterrupted | func | no |  | Called when the camera has been interrupted
-onCameraInterruptionEnded | func | no |  | Called when the camera interruption has ended
-onCameraDidStopRunning | func | no |  | Called when the camera has stopped runing with an error  @param {{error}} The error message description
-onStatsReceived | func | no |  | Called when stats are received (after calling getStats)
-onNetworkQualityLevelsChanged | func | no |  | Called when the network quality levels of a participant have changed (only if enableNetworkQualityReporting is set to True when connecting)
-onDominantSpeakerDidChange | func | no |  | Called when dominant speaker changes @param {{ participant, room }} dominant participant
------
-
-**src/TwilioVideoLocalView.android.js**
-
-
-### 1. TwilioVideoPreview
-
-
-
-
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
------
-
-**src/TwilioVideoLocalView.ios.js**
-
-
-### 1. TwilioVideoLocalView
-
-
-
-
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-enabled | bool | YES |  | Indicate if video feed is enabled.
-scaleType | enum(&#x27;fit&#x27;,&#x27;fill&#x27;,) | no |  | How the video stream should be scaled to fit its container.
------
-
-**src/TwilioVideoParticipantView.android.js**
-
-
-### 1. TwilioRemotePreview
-
-
-
-
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-trackIdentifier | shape(,) | no |  | &nbsp;
-onFrameDimensionsChanged | func | no |  | &nbsp;
-trackSid | string | no |  | &nbsp;
-renderToHardwareTextureAndroid | string | no |  | &nbsp;
-onLayout | string | no |  | &nbsp;
-accessibilityLiveRegion | string | no |  | &nbsp;
-accessibilityComponentType | string | no |  | &nbsp;
-importantForAccessibility | string | no |  | &nbsp;
-accessibilityLabel | string | no |  | &nbsp;
-nativeID | string | no |  | &nbsp;
-testID | string | no |  | &nbsp;
------
-
-**src/TwilioVideoParticipantView.ios.js**
-
-
-### 1. TwilioVideoParticipantView
-
-
-
-
-Property | Type | Required | Default value | Description
-:--- | :--- | :--- | :--- | :---
-trackIdentifier | shape(,,) | no |  | &nbsp;
------
+<br><br>
