@@ -7,12 +7,13 @@
 package com.twiliorn.library;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 
 import com.twilio.video.VideoView;
-
+import com.twiliorn.library.extensions.VideoFrameKtxKt;
 import tvi.webrtc.VideoFrame;
 
 /*
@@ -20,7 +21,7 @@ import tvi.webrtc.VideoFrame;
  * request.
  */
 public class PatchedVideoView extends VideoView {
-
+    private VideoFrame currentFrame = null;
     private boolean notifyFrameRendered = false;
     private Listener listener;
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -45,6 +46,7 @@ public class PatchedVideoView extends VideoView {
             });
         }
         super.onFrame(frame);
+        currentFrame = frame;
     }
 
     /*
@@ -63,5 +65,9 @@ public class PatchedVideoView extends VideoView {
 
     public interface Listener {
         void onFirstFrame();
+    }
+    public Bitmap getCurrentFrameImage() {
+        Bitmap bitmap = VideoFrameKtxKt.toBitmap(currentFrame);
+        return bitmap;
     }
 }
