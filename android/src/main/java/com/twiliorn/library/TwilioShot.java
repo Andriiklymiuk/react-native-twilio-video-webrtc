@@ -51,8 +51,11 @@ public class TwilioShot implements UIBlock {
                     promise.reject(ERROR_UNABLE_TO_DETECT_BARCODE, "No barcode detected");
                 }
                 return;
+            } else {
+                promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "not instance of TwilioVideoPreview");
             }
+        } else {
+            promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
         }
-        promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
     }
 }
